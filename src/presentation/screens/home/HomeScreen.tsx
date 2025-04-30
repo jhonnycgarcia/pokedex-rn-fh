@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { View } from 'react-native';
-import { ActivityIndicator, Button, Text } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
 import { getPokemons } from '../../../actions';
+import { PokemonBallBg } from '../../components';
 
 export const HomeScreen = () => {
     const { data = [], isLoading } = useQuery({
@@ -12,13 +12,16 @@ export const HomeScreen = () => {
 
     return (
         <View>
-            <Text variant="headlineLarge">HomeScreen</Text>
-            { (isLoading)
-                ? <ActivityIndicator />
-                : <Button mode="contained" onPress={() => console.log('Pressed')}>
-                    Press me
-                </Button>
-            }
+            <PokemonBallBg style={styles.imgPosition} />
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    imgPosition: {
+        position: 'absolute',
+        top: -100,
+        right: -100,
+        opacity: 0.3,
+    },
+});
