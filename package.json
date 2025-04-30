@@ -8,7 +8,9 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "start:ios": "npm run ios -- --udid='6A18C026-ED41-4A14-9D5E-4BEA6BDE45E9'"
+    "start:ios": "npm run ios -- --udid='6A18C026-ED41-4A14-9D5E-4BEA6BDE45E9'",
+    "log:android": "react-native log-android",
+    "log:ios": "react-native log-ios"
   },
   "dependencies": {
     "@react-native-masked-view/masked-view": "^0.3.2",
