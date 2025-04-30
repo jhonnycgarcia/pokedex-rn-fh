@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "start:ios": "npm run ios -- --udid='6A18C026-ED41-4A14-9D5E-4BEA6BDE45E9'"
   },
   "dependencies": {
     "react": "19.0.0",
