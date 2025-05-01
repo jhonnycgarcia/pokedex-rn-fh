@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { StyleSheet, View } from 'react-native';
 import { getPokemons } from '../../../actions';
 import { PokemonBallBg, PokemonCard } from '../../components';
@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const HomeScreen = () => {
     const { top } = useSafeAreaInsets();
+    const queryClient = useQueryClient();
 
     // esta es la forma tradicional de realizar una peticion HTTP
     // const { data: pokemons = [], isLoading } = useQuery({
@@ -20,9 +21,18 @@ export const HomeScreen = () => {
     const { data, isLoading, fetchNextPage } = useInfiniteQuery({
         queryKey: ['pokemons', 'infinite'],
         initialPageParam: 0,
-        queryFn: ({ pageParam = 0 }) => getPokemons(pageParam),
-        getNextPageParam: (lastPage, pages) => pages.length,
         staleTime: 1000 * 60 * 60, // 60 minutes
+        queryFn: async({ pageParam = 0 }) => {
+            const pokemons = await getPokemons(pageParam);
+
+            pokemons.forEach(pokemon => {
+                queryClient.setQueryData(['pokemon', pokemon.id], pokemon);
+            });
+
+            return pokemons;
+        },
+        getNextPageParam: (lastPage, pages) => pages.length,
+
     });
 
     return (
@@ -44,9 +54,9 @@ export const HomeScreen = () => {
                 onEndReachedThreshold={ 0.6 }
                 onEndReached={() => fetchNextPage()}
                 showsVerticalScrollIndicator={false}
-                // ListFooterComponent={() => (
-                //     <ActivityIndicator size="large" color={globalTheme.colors.primary} />
-                // )}
+                ListFooterComponent={() => (
+                    <ActivityIndicator size="large" />
+                )}
             />
         </View>
     );
