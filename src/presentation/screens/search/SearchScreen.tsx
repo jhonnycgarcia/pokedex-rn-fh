@@ -3,8 +3,8 @@ import { globalTheme } from '../../../config/theme/global-theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ActivityIndicator, Text, TextInput } from 'react-native-paper';
 import { Pokemon } from '../../../domain/entities/pokemon';
-import { PokemonCard } from '../../components';
-import { getPokemonNameWithId } from '../../../actions';
+import { FullScreenLoader, PokemonCard } from '../../components';
+import { getPokemonNameWithId, getPokemonsByIds } from '../../../actions';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
@@ -29,7 +29,17 @@ export const SearchScreen = () => {
         if(term.length < 3) return [];
 
         return pokemonNameList?.filter((item) => item.name.includes(term.toLowerCase())) ?? [];
+    }, [term]);
+
+    const { data: pokemons = [], isLoading: isLoadingPokemons } = useQuery({
+        queryKey: ['pokemons', 'by', pokemonNameIdList],
+        queryFn: () => getPokemonsByIds(pokemonNameIdList.map((item) => item.id)),
+        staleTime: 1000 * 60 * 5, // 5 minutos
     });
+
+    if(isLoading) {
+        return (<FullScreenLoader />);
+    }
 
     return (
         <View style={[globalTheme.globalMargin, { paddingTop: top + 10 }]}>
@@ -42,19 +52,16 @@ export const SearchScreen = () => {
                 value={term}
             />
 
-            <ActivityIndicator style={{ paddingTop: 20 }} size="large" />
-
-            <Text>{JSON.stringify(pokemonNameIdList, null, 2)}</Text>
+            { isLoadingPokemons && <ActivityIndicator style={{ paddingTop: 20 }} size="large" /> }
 
             <FlatList
-                data={[] as Pokemon[]}
+                data={pokemons}
                 keyExtractor={(item, index) => `${item.id}-${index}`}
                 numColumns={2}
                 style={{ paddingTop: top + 20 }}
-                renderItem={({ item }) => (
-                    <PokemonCard pokemon={item} />
-                )}
-                onEndReachedThreshold={ 0.6 }
+                renderItem={({ item }) => (<PokemonCard pokemon={item} />)}
+                showsVerticalScrollIndicator={false}
+                ListFooterComponent={ <View style={{ height: 120 }} /> }
             />
         </View>
     );
