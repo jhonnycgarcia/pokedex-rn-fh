@@ -3,13 +3,18 @@ import { StyleSheet, View } from 'react-native';
 import { getPokemons } from '../../../actions';
 import { PokemonBallBg, PokemonCard } from '../../components';
 import { FlatList } from 'react-native-gesture-handler';
-import { ActivityIndicator, Text } from 'react-native-paper';
+import { ActivityIndicator, FAB, Text, useTheme } from 'react-native-paper';
 import { globalTheme } from '../../../config/theme/global-theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RootStackParams } from '../../navigator/StackNavigator';
+import { StackScreenProps } from '@react-navigation/stack';
 
-export const HomeScreen = () => {
+interface Props extends StackScreenProps<RootStackParams, 'HomeScreen'> {}
+
+export const HomeScreen = ({ navigation }: Props) => {
     const { top } = useSafeAreaInsets();
     const queryClient = useQueryClient();
+    const theme = useTheme();
 
     // esta es la forma tradicional de realizar una peticion HTTP
     // const { data: pokemons = [], isLoading } = useQuery({
@@ -57,6 +62,14 @@ export const HomeScreen = () => {
                 ListFooterComponent={() => (
                     <ActivityIndicator size="large" />
                 )}
+            />
+
+            <FAB
+                label="Buscar"
+                style={[globalTheme.fab, { backgroundColor: theme.colors.primary }]}
+                mode="elevated"
+                color={ theme.dark ? 'black' : 'white' }
+                onPress={() => navigation.push('SearchScreen') }
             />
         </View>
     );
